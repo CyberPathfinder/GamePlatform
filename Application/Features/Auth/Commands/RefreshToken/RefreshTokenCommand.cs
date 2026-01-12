@@ -24,7 +24,6 @@ public class RefreshTokenCommandHandler(
 
         ApplicationUser? user = null;
         string newRefreshToken = null!;
-        DateTimeOffset expiresAt = default;
 
         try
         {
@@ -94,12 +93,26 @@ public class RefreshTokenCommandHandler(
         }
         catch (DbUpdateConcurrencyException)
         {
-            await transaction.RollbackAsync(cancellationToken);
+            try
+            {
+                await transaction.RollbackAsync(cancellationToken);
+            }
+            catch
+            {
+                // Ignore rollback failure to prioritize the original concurrency exception signal
+            }
             throw new AuthenticationException("Token has already been used");
         }
         catch
         {
-             await transaction.RollbackAsync(cancellationToken);
+             try
+             {
+                 await transaction.RollbackAsync(cancellationToken);
+             }
+             catch
+             {
+                 // Ignore rollback failure so the original exception is thrown
+             }
              throw;
         }
 

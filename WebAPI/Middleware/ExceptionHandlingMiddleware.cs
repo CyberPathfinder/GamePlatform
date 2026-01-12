@@ -11,6 +11,12 @@ public class ExceptionHandlingMiddleware
     private readonly RequestDelegate _next;
     private readonly ILogger<ExceptionHandlingMiddleware> _logger;
 
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+    };
+
     public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
     {
         _next = next;
@@ -32,8 +38,7 @@ public class ExceptionHandlingMiddleware
     private async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
         var response = context.Response;
-        response.ContentType = "application/json";
-
+        
         var errorResponse = new ErrorResponse
         {
             Success = false,
@@ -47,7 +52,7 @@ public class ExceptionHandlingMiddleware
                 // Mask the actual reason in logs to prevent enumeration/info leakage
                 _logger.LogWarning("Authentication failed.");
                 response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                errorResponse.Message = authEx.Message;
+                errorResponse.Message = "Authentication failed";
                 break;
             case ValidationException valEx: // System.ComponentModel.DataAnnotations.ValidationException
                 _logger.LogWarning("Validation failed: {Message}", valEx.Message);
@@ -73,13 +78,9 @@ public class ExceptionHandlingMiddleware
                 break;
         }
 
-        var options = new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        };
+        response.ContentType = "application/json";
 
-        var result = JsonSerializer.Serialize(errorResponse, options);
+        var result = JsonSerializer.Serialize(errorResponse, JsonOptions);
         await response.WriteAsync(result);
     }
 }

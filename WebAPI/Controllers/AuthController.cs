@@ -6,11 +6,13 @@ using Application.Features.Auth.Commands.Register;
 using Application.Features.Auth.Commands.ResetPassword;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace WebAPI.Controllers;
 
 [ApiController]
 [Route("api/v1/[controller]")]
+[EnableRateLimiting("AuthPolicy")]
 public class AuthController(IMediator mediator) : ControllerBase
 {
     [HttpPost("register")]
