@@ -1,10 +1,10 @@
-using System.Buffers.Text;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Application.Common.Interfaces;
 using Domain.Auth;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -63,11 +63,12 @@ public sealed class TokenService : ITokenService
         return (new JwtSecurityTokenHandler().WriteToken(jwt), expiresAtUtc);
     }
 
-    public string CreateRefreshToken()
+    public (string Token, DateTimeOffset ExpiresAtUtc) CreateRefreshToken()
     {
-        Span<byte> bytes = stackalloc byte[32];
-        RandomNumberGenerator.Fill(bytes);
-        return Base64Url.EncodeToString(bytes);
+        var bytes = RandomNumberGenerator.GetBytes(32);
+        var token = WebEncoders.Base64UrlEncode(bytes);
+        var expiresAtUtc = DateTimeOffset.UtcNow.AddDays(_options.RefreshTokenExpirationDays);
+        return (token, expiresAtUtc);
     }
 
     public string HashRefreshToken(string refreshToken)

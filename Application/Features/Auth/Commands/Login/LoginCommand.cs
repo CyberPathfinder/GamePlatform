@@ -35,7 +35,7 @@ public class LoginCommandHandler(
         var roles = await userManager.GetRolesAsync(user);
         var (accessToken, expiresAt) = tokenService.CreateAccessToken(user, roles.ToList());
 
-        var refreshToken = tokenService.CreateRefreshToken();
+        var (refreshToken, refreshTokenExpiresAt) = tokenService.CreateRefreshToken();
         var refreshTokenHash = tokenService.HashRefreshToken(refreshToken);
 
         var tokenEntity = new Domain.Auth.RefreshToken
@@ -44,7 +44,7 @@ public class LoginCommandHandler(
             UserId = user.Id,
             TokenHash = refreshTokenHash,
             CreatedAtUtc = DateTime.UtcNow,
-            ExpiresAtUtc = DateTime.UtcNow.AddDays(10), // Configurable in real app
+            ExpiresAtUtc = refreshTokenExpiresAt.UtcDateTime,
             DeviceId = request.DeviceId,
             UserAgent = request.UserAgent
         };

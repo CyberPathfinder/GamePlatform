@@ -31,10 +31,13 @@ public class GameVaultDbContext(DbContextOptions<GameVaultDbContext> options) : 
             entity.HasKey(e => e.Id);
 
             entity.Property(e => e.TokenHash)
-                .HasMaxLength(256)
+                .HasMaxLength(128)
                 .IsRequired();
             entity.HasIndex(x => x.TokenHash)
                 .IsUnique();
+
+            entity.Property(x => x.RowVersion)
+                .IsRowVersion();
 
             entity.Property(x => x.DeviceId).HasMaxLength(256);
             entity.Property(x => x.UserAgent).HasMaxLength(512);

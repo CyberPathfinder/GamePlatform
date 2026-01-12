@@ -40,6 +40,15 @@ public class RefreshTokenCommandHandler(
             throw new AuthenticationException("Token expired");
         }
 
+        // Strict Device Validation
+        if (!string.IsNullOrEmpty(existingToken.DeviceId))
+        {
+            if (string.IsNullOrEmpty(request.DeviceId) || existingToken.DeviceId != request.DeviceId)
+            {
+                throw new AuthenticationException("Invalid device");
+            }
+        }
+
         var user = await userManager.FindByIdAsync(existingToken.UserId.ToString());
         if (user == null)
         {
@@ -47,7 +56,7 @@ public class RefreshTokenCommandHandler(
         }
 
         // Rotate token
-        var newRefreshToken = tokenService.CreateRefreshToken();
+        var (newRefreshToken, newRefreshTokenExpiresAt) = tokenService.CreateRefreshToken();
         var newRefreshTokenHash = tokenService.HashRefreshToken(newRefreshToken);
 
         var newTokenEntity = new Domain.Auth.RefreshToken
@@ -56,7 +65,7 @@ public class RefreshTokenCommandHandler(
             UserId = user.Id,
             TokenHash = newRefreshTokenHash,
             CreatedAtUtc = DateTime.UtcNow,
-            ExpiresAtUtc = DateTime.UtcNow.AddDays(10),
+            ExpiresAtUtc = newRefreshTokenExpiresAt.UtcDateTime,
             DeviceId = request.DeviceId,
             UserAgent = request.UserAgent
         };
@@ -65,7 +74,15 @@ public class RefreshTokenCommandHandler(
         existingToken.Revoke(newTokenEntity.Id);
 
         dbContext.RefreshTokens.Add(newTokenEntity);
-        await dbContext.SaveChangesAsync(cancellationToken);
+        
+        try
+        {
+            await dbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            throw new AuthenticationException("Token has already been used");
+        }
 
         var roles = await userManager.GetRolesAsync(user);
         var (accessToken, expiresAt) = tokenService.CreateAccessToken(user, roles.ToList());
