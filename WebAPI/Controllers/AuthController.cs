@@ -14,14 +14,14 @@ namespace WebAPI.Controllers;
 public class AuthController(IMediator mediator) : ControllerBase
 {
     [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterCommand command)
+    public async Task<IActionResult> Register([FromBody] RegisterCommand command)
     {
         await mediator.Send(command);
         return Ok(new { Message = "Registration successful. Please check your email to confirm your account." });
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<LoginResponse>> Login(LoginCommand command)
+    public async Task<ActionResult<LoginResponse>> Login([FromBody] LoginCommand command)
     {
         // Capture UserAgent if not provided
         var userAgent = Request.Headers.UserAgent.ToString();
@@ -32,7 +32,7 @@ public class AuthController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost("refresh")]
-    public async Task<ActionResult<RefreshTokenResponse>> Refresh(RefreshTokenCommand command)
+    public async Task<ActionResult<RefreshTokenResponse>> Refresh([FromBody] RefreshTokenCommand command)
     {
         var userAgent = Request.Headers.UserAgent.ToString();
         var commandWithContext = command with { UserAgent = string.IsNullOrEmpty(command.UserAgent) ? userAgent : command.UserAgent };
@@ -49,14 +49,14 @@ public class AuthController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost("forgot-password")]
-    public async Task<IActionResult> ForgotPassword(ForgotPasswordCommand command)
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordCommand command)
     {
         await mediator.Send(command);
         return Ok(new { Message = "If the email is valid, a password reset link has been sent." });
     }
 
     [HttpPost("reset-password")]
-    public async Task<IActionResult> ResetPassword(ResetPasswordCommand command)
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordCommand command)
     {
         await mediator.Send(command);
         return Ok(new { Message = "Password has been reset successfully." });

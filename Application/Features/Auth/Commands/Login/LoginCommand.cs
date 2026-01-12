@@ -29,8 +29,10 @@ public class LoginCommandHandler(
             throw new AuthenticationException("Invalid credentials");
         }
 
-        // Optional: Check if email is confirmed 
-        // if (!await userManager.IsEmailConfirmedAsync(user)) ...
+        if (userManager.Options.SignIn.RequireConfirmedEmail && !await userManager.IsEmailConfirmedAsync(user))
+        {
+             throw new AuthenticationException("Email not confirmed");
+        }
 
         var roles = await userManager.GetRolesAsync(user);
         var (accessToken, expiresAt) = tokenService.CreateAccessToken(user, roles.ToList());

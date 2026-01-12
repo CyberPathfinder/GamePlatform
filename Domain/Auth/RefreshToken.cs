@@ -51,11 +51,6 @@ public sealed class RefreshToken
     public Guid? ReplacedByTokenId { get; private set; }
 
     /// <summary>
-    /// Версия строки для контроля конкурентного доступа.
-    /// </summary>
-    public byte[] RowVersion { get; set; } = [];
-
-    /// <summary>
     /// Возвращает true, если токен истёк.
     /// </summary>
     public bool IsExpired => DateTime.UtcNow >= ExpiresAtUtc;

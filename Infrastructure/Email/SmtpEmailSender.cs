@@ -67,7 +67,7 @@ public sealed partial class SmtpEmailSender : IEmailSender
         var to = RequireEmail(user);
 
         var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
-        var url = $"{_baseUrl}/api/v1/auth/reset-password?userId={user.Id}&token={encodedToken}";
+        var url = $"{_baseUrl}/reset-password?userId={user.Id}&token={encodedToken}";
 
         const string subject = "Reset your GameVault password";
         var html = EmailTemplates.ResetPasswordHtml(url, _baseUrl);
