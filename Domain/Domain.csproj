@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+      <!-- Включает применение code-style правил в build (а не только в IDE) -->
+      <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+      <!-- Для MVP я бы держал: предупреждения видны, но не блокируют;
+         и поднимать "warnings as errors" точечно/в CI постепенно -->
+      <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+      <!-- Генерация документации (полезно для публичных контрактов API) -->
+      <!--<GenerateDocumentationFile>true</GenerateDocumentationFile>-->
+      <!-- Детерминированные сборки -->
+      <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Auth\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <!-- Явно сделать отдельные правила ошибками -->
+    <WarningsAsErrors>SA1503;IDE0005</WarningsAsErrors>
+  </PropertyGroup>
+
+</Project>

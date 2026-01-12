@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+	  <!-- Включает применение code-style правил в build (а не только в IDE) -->
+	  <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+	  <!-- Для MVP я бы держал: предупреждения видны, но не блокируют;
+         и поднимать "warnings as errors" точечно/в CI постепенно -->
+	  <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+	  <!-- Генерация документации (полезно для публичных контрактов API) -->
+	  <!--<GenerateDocumentationFile>true</GenerateDocumentationFile>-->
+	  <!-- Детерминированные сборки -->
+	  <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.1" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Поднять некоторые стилистические диагностики до ошибки в этой сборке -->
+    <AdditionalFiles Include="..\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <!-- Явно сделать отдельные правила ошибками -->
+    <WarningsAsErrors>SA1503;IDE0005</WarningsAsErrors>
+  </PropertyGroup>
+
+</Project>

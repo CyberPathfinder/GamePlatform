@@ -1,0 +1,123 @@
+# EditorConfig is awesome: https://EditorConfig.org
+root = true
+
+#
+# Общие правила репозитория
+#
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+
+#
+# C# 14 / .NET 10
+#
+[*.cs]
+
+# -----------------------------
+# Namespace / using (modern C#)
+# -----------------------------
+
+# Требуем file-scoped namespaces
+csharp_style_namespace_declarations = file_scoped:warning
+
+# using directives вне namespace (обязательно для file-scoped)
+csharp_using_directive_placement = outside_namespace:suggestion
+
+# System using первыми
+dotnet_sort_system_directives_first = true
+
+# -----------------------------
+# var preferences (modern)
+# -----------------------------
+
+# var, когда тип очевиден
+csharp_style_var_for_built_in_types = true:suggestion
+csharp_style_var_when_type_is_apparent = true:suggestion
+csharp_style_var_elsewhere = true:suggestion
+
+# -----------------------------
+# Современные упрощения
+# -----------------------------
+
+csharp_style_prefer_switch_expression = true:suggestion
+csharp_style_prefer_pattern_matching = true:suggestion
+csharp_style_prefer_not_pattern = true:suggestion
+csharp_style_prefer_extended_property_pattern = true:suggestion
+csharp_style_throw_expression = true:suggestion
+
+# -----------------------------
+# Скобки — строго
+# -----------------------------
+
+# Всегда фигурные скобки (IDE)
+csharp_prefer_braces = true:error
+
+# И дублируем через StyleCop (на сборке / CI)
+dotnet_diagnostic.SA1503.severity = error
+
+# -----------------------------
+# Documentation — ОСОЗНАННО ОТКЛЮЧЕНО
+# (русские комментарии допускаются, шаблоны не нужны)
+# -----------------------------
+
+# Компилятор
+dotnet_diagnostic.CS1591.severity = none
+
+# Все documentation-анализаторы
+dotnet_analyzer_diagnostic.category-Documentation.severity = none
+
+# StyleCop documentation rules — явно гасим "хвосты"
+dotnet_diagnostic.SA1600.severity = none
+dotnet_diagnostic.SA1601.severity = none
+dotnet_diagnostic.SA1602.severity = none
+dotnet_diagnostic.SA1604.severity = none
+dotnet_diagnostic.SA1611.severity = none
+dotnet_diagnostic.SA1615.severity = none
+dotnet_diagnostic.SA1618.severity = none
+dotnet_diagnostic.SA1623.severity = none   # "Gets or sets"
+dotnet_diagnostic.SA1629.severity = none
+dotnet_diagnostic.SA1633.severity = none   # File header
+
+# -----------------------------
+# StyleCop — modern overrides
+# -----------------------------
+
+# Не требуем this. для членов класса
+dotnet_diagnostic.SA1101.severity = none
+
+# Конфликтует с file-scoped namespace
+dotnet_diagnostic.SA1200.severity = none
+
+dotnet_diagnostic.SA1309.severity = none
+dotnet_diagnostic.SA1000.severity = none
+
+dotnet_diagnostic.SA1516.severity = none
+
+#
+# Анализаторы (общий минимум)
+#
+[*.{cs,vb}]
+
+# Включаем анализаторы как warning по умолчанию
+dotnet_analyzer_diagnostic.severity = warning
+dotnet_diagnostic.SA1204.severity = none
+
+# Но:
+# Неиспользуемые using — ошибка (ломаем сборку / CI)
+dotnet_diagnostic.IDE0005.severity = error
+
+#
+# JSON
+#
+[*.json]
+indent_size = 2
+
+#
+# YAML
+#
+[*.{yml,yaml}]
+indent_size = 2
