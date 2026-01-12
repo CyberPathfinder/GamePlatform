@@ -1,6 +1,6 @@
-using Infrastructure.Auth;
+using Domain.Auth;
 
-namespace Infrastructure.Email;
+namespace Application.Common.Interfaces;
 
 public interface IEmailSender
 {

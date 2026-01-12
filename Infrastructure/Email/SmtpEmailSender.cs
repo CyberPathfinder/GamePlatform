@@ -1,5 +1,6 @@
 using System.Text;
-using Infrastructure.Auth;
+using Application.Common.Interfaces;
+using Domain.Auth;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.AspNetCore.WebUtilities;

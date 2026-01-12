@@ -3,12 +3,14 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Application.Common.Interfaces;
+using Domain.Auth;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Infrastructure.Auth;
 
-public sealed class TokenService
+public sealed class TokenService : ITokenService
 {
     private readonly JwtOptions _options;
     private readonly SigningCredentials _signingCredentials;
@@ -61,7 +63,7 @@ public sealed class TokenService
         return (new JwtSecurityTokenHandler().WriteToken(jwt), expiresAtUtc);
     }
 
-    public static string CreateRefreshToken()
+    public string CreateRefreshToken()
     {
         Span<byte> bytes = stackalloc byte[32];
         RandomNumberGenerator.Fill(bytes);
