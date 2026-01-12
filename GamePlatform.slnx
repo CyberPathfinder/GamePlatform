@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="Infrastructure/Infrastructure.csproj" />
+    <Project Path="Application/Application.csproj" Id="80564dc8-cca8-498c-9780-7099f44ddce6" />
     <Project Path="Domain/Domain.csproj" />
     <Project Path="WebAPI/WebAPI.csproj" />
   </Folder>
