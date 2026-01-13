@@ -11,6 +11,8 @@ using Domain.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
+using Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +23,7 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-    
+
     options.AddFixedWindowLimiter("AuthPolicy", opt =>
     {
         opt.PermitLimit = 10;
@@ -73,10 +75,15 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Seeding Roles
 using (var scope = app.Services.CreateScope())
 {
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
+    var services = scope.ServiceProvider;
+
+    var db = services.GetRequiredService<GameVaultDbContext>();
+    await db.Database.MigrateAsync();
+
+    // Seeding Roles
+    var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
     var roles = new[] { "User", "Admin" };
 
     foreach (var role in roles)
